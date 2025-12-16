@@ -2,6 +2,7 @@ import express, { Request, Response } from "express";
 import config from "./config";
 import initDB from "./config/db/initDB";
 import { authRoutes } from "./modules/auth/auth.routes";
+import { userRoutes } from "./modules/users/users.routes";
 
 const app = express();
 const port = config.port;
@@ -18,6 +19,7 @@ app.get("/", (req: Request, res: Response) => {
 
 // API Routes
 app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/users", userRoutes);
 
 // Server Listener
 app.listen(port, () => {
