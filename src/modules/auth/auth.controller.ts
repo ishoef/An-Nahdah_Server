@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { authService } from "./auth.service";
 
+// Register User
 const registerUser = async (req: Request, res: Response) => {
   console.log("registerUser: ", req.body);
 
@@ -20,6 +21,27 @@ const registerUser = async (req: Request, res: Response) => {
   }
 };
 
+// login User
+const loginUser = async (req: Request, res: Response) => {
+  const { email, password } = req.body;
+
+  try {
+    const result = await authService.loginUser(email, password);
+
+    res.status(200).json({
+      success: true,
+      message: "Login Successfully",
+      data: result,
+    });
+  } catch (error: any) {
+    res.status(404).json({
+      success: false,
+      message: `login failed: ${error.message}`,
+    });
+  }
+};
+
 export const authController = {
   registerUser,
+  loginUser,
 };
