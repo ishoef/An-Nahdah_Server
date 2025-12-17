@@ -4,22 +4,39 @@ import config from "../../config";
 import jwt from "jsonwebtoken";
 
 // Register User
-const registerUser = async (payload: Record<string, unknown>) => {
-  const { name, email, password, phone, role } = payload;
-  if (!password) {
-    throw new Error("Password is missing");
+interface RegisterUserPayload {
+  name: string;
+  email: string;
+  password: string;
+  phone?: string | null;
+  age: number;
+  gender: "male" | "female" | "other";
+}
+
+const registerUser = async (payload: RegisterUserPayload) => {
+  const { name, email, password, phone = null, age, gender } = payload;
+
+  // Basic validation
+  if (!name || !email || !password || !age || !gender) {
+    throw new Error("Missing required fields");
   }
 
-  const hashPass = await bcrypt.hash(password as string, 10);
+  // Hash password
+  const hashPass = await bcrypt.hash(password, 10);
 
-  // Insert user to db
+  // Insert user (role omitted → default applied)
   const result = await pool.query(
-    `INSERT INTO users(name, email, password, phone, role) VALUES($1, $2, $3, $4, $5) RETURNING *`,
-    [name, email, hashPass, phone, role]
+    `
+    INSERT INTO users (name, email, password, phone, age, gender)
+    VALUES ($1, $2, $3, $4, $5, $6)
+    RETURNING id, name, email, phone, role, age, gender, created_at
+    `,
+    [name, email, hashPass, phone, age, gender]
   );
 
-  return result;
+  return result.rows[0];
 };
+
 
 // Login User
 const loginUser = async (email: string, password: string) => {

@@ -3,10 +3,16 @@ import config from "./config";
 import initDB from "./config/db/initDB";
 import { authRoutes } from "./modules/auth/auth.routes";
 import { userRoutes } from "./modules/users/users.routes";
-
+import cors from "cors";
 const app = express();
 const port = config.port;
 
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    credentials: true,
+  })
+);
 app.use(express.json());
 
 // DB
